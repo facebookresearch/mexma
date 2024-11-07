@@ -66,18 +66,18 @@ torchrun main.py \
 ```
 
 ## Loading the pretrained model
-In order to use the MEXMA model, follow these steps:
-1) ```wget https://dl.fbaipublicfiles.com/mexma/MEXMA.zip```
-2) ```unzip MEXMA.zip```
-3) 
+In order to use the MEXMA model, you can just load it from HuggingFace:
 ```
-from transformers import XLMRobertaModel
-import torch
-model = XLMRobertaModel.from_pretrained('MEXMA')
-input_ids = torch.randint(low=0, high=25000, size=(5,10))
-outputs = model(input_ids)
-cls_embeddings = outputs.last_hidden_state[:,0,:]
-assert cls_embeddings.shape == torch.Size([5,1024]), "There was an issue loading the model, the shapes are incorrect"
+from transformers import AutoTokenizer, XLMRobertaModel
+
+tokenizer = AutoTokenizer.from_pretrained("xlm-roberta-large")
+model = XLMRobertaModel.from_pretrained("facebook/MEXMA", add_pooling_layer=False)
+example_sentences = ['Sentence1', 'Sentence2']
+example_inputs = tokenizer(example_sentences, return_tensors='pt')
+
+outputs = model(**example_inputs)
+sentence_representation = outputs.last_hidden_state[:, 0]
+print(sentence_representation.shape) # torch.Size([2, 1024])
 ```
 
 ## License
